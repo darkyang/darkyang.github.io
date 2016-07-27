@@ -13,8 +13,6 @@ GCD处理异步任务和并发任务的关键载体，dispatch queue 是类类�
 
 ## dispatch_sync和dispatch_async
 
-'''objc
-
 	// dispatch task synchronously
 
 	dispatch_sync(someQueue1, ^{
@@ -34,7 +32,6 @@ GCD处理异步任务和并发任务的关键载体，dispatch queue 是类类�
 	});
 
 	// do something 4
-'''
 
 同步任务 do something 2 一定会在 do something 1完成之后执行。
 异步任务 do something 4 会立即执行，而不会等待 do something 3 执行完。
@@ -44,11 +41,9 @@ GCD处理异步任务和并发任务的关键载体，dispatch queue 是类类�
 
 ##dispatch_barrier_async
 
-'''objc
 
-void dispatch_barrier_async(dispatch_queue_t queue, dispatch_block_t block);
+	void dispatch_barrier_async(dispatch_queue_t queue, dispatch_block_t block);
 
-'''
 
 
 dispatch_barrier_asynvc 提交一个任务到指定的并发队列，并在该队列中创建一个同步点，当并发队列调度遇见一个barrier任务，会延迟执行barrier任务，等待所有在barrier之前提交的任务执行结束后，调度barrier任务开始执行。
@@ -100,109 +95,101 @@ dispatch_sync提交的任务是在当前线程中执行的。实际上dispatch_s
 
 * 案例一：
 
-‘’‘objc
 
-	NSLog(@"1"); // 任务1
+		NSLog(@"1"); // 任务1
 
-	dispatch_sync(dispatch_get_main_queue(), ^{
+		dispatch_sync(dispatch_get_main_queue(), ^{
 
-    	NSLog(@"2"); // 任务2
+    		NSLog(@"2"); // 任务2
     
-	});
+		});
 
-	NSLog(@"3"); // 任务3
+		NSLog(@"3"); // 任务3
 
-'''
+
 
 向主队列提交一个同步任务，dispatch_sync向主队列提交了任务2，然后阻塞了主线程，主队列在等待任务2的完成来唤醒，任务2的执行需要主线程被唤醒，但此时主线程处于阻塞状态，造成死锁。
 
 *  案例二：
 
-‘’‘objc
 
-	NSLog(@"1"); // 任务1
+		NSLog(@"1"); // 任务1
 
-	dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+		dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
-    NSLog(@"2"); // 任务2
+    	NSLog(@"2"); // 任务2
     
-	});
+		});
 
-	NSLog(@"3"); // 任务3
+		NSLog(@"3"); // 任务3
 
-‘’‘
 
 在当前线程向全局并发队列提交同步任务2，dispatch_sync会阻塞当前线程，任务2会暂停DISPATCH_QUEUE_PRIORITY_HIGH以及该队列所在线程，然后唤醒当前线程，执行任务2，执行任务3.
 
 
 * 案例三：
 
-‘’‘objc
 
-	dispatch_queue_t queue = dispatch_queue_create("com.demo.serialQueue", DISPATCH_QUEUE_SERIAL);
 
-	NSLog(@"1"); // 任务1
+		dispatch_queue_t queue = dispatch_queue_create("com.demo.serialQueue", DISPATCH_QUEUE_SERIAL);
 
-	dispatch_async(queue, ^{
+		NSLog(@"1"); // 任务1
 
-    	NSLog(@"2"); // 任务2
+		dispatch_async(queue, ^{
+
+    		NSLog(@"2"); // 任务2
     
-    	dispatch_sync(queue, ^{  
-        	NSLog(@"3"); // 任务3
-    	});
+    		dispatch_sync(queue, ^{  
+        		NSLog(@"3"); // 任务3
+    		});
     
-    	NSLog(@"4"); // 任务4
-	});
+    		NSLog(@"4"); // 任务4
+		});
 
-	NSLog(@"5"); // 任务5
+		NSLog(@"5"); // 任务5
 
-'''
 
 在当前线程向自定义串行队列提交异步任务［2，3，4］，在线程池中新建线程b来执行异步任务。 当执行到dispatch_sync时，向串行队列提交任务3，会阻塞当前线程b，任务3会暂停串行队列，然后唤醒当前线程b。但是任务3的执行需要等待任务4的完成，但是线程b被阻塞，任务4无法执行，导致死锁。
 
 * 案例四：
 
-'''objc
+		NSLog(@"1"); // 任务1
 
-	NSLog(@"1"); // 任务1
+		dispatch_async(dispatch_get_main_queue(), ^{
 
-	dispatch_async(dispatch_get_main_queue(), ^{
+    		NSLog(@"2"); // 任务2
+    		dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        		NSLog(@"3"); // 任务3
+    		});
+    		NSLog(@"4"); // 任务4
+		});
 
-    	NSLog(@"2"); // 任务2
-    	dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        	NSLog(@"3"); // 任务3
-    	});
-    	NSLog(@"4"); // 任务4
-	});
+		NSLog(@"5"); // 任务5
 
-	NSLog(@"5"); // 任务5
 
-'''
 
 在当前线程向全局并发队列提交［1，异步任务，5］，异步任务中的任务是［2，同步任务，4］。
 
 
 * 案例5
 
-'''objc 
 
-	dispatch_async(dispatch_get_global_queue(0, 0), ^{
+		dispatch_async(dispatch_get_global_queue(0, 0), ^{
 
-    	NSLog(@"1"); // 任务1
-    	dispatch_sync(dispatch_get_main_queue(), ^{
-        	NSLog(@"2"); // 任务2
-    	});
-    	NSLog(@"3"); // 任务3
-	});
+    		NSLog(@"1"); // 任务1
+    		dispatch_sync(dispatch_get_main_queue(), ^{
+        		NSLog(@"2"); // 任务2
+    		});
+    		NSLog(@"3"); // 任务3
+		});
 
-	NSLog(@"4"); // 任务4
+		NSLog(@"4"); // 任务4
 
-	while (1) {
-	}
+		while (1) {
+		}
 
-	NSLog(@"5"); // 任务5
+		NSLog(@"5"); // 任务5
 
-'''
 
 1.主队列添加任务［异步任务，任务4，死循环，任务5］，向全局并发队列提交异步任务［1，2，3］
 
