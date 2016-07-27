@@ -15,25 +15,25 @@ GCD处理异步任务和并发任务的关键载体，dispatch queue 是类类�
 
 '''objc
 
-// dispatch task synchronously
+	// dispatch task synchronously
 
-dispatch_sync(someQueue1, ^{
+	dispatch_sync(someQueue1, ^{
 
     // do something 1
     
-});
+	});
 
-// do something 2
+	// do something 2
 
-// dispatch task asynchronously
+	// dispatch task asynchronously
 
-dispatch_async(someQueue2, ^{
+	dispatch_async(someQueue2, ^{
 
-    // do something 3
+    	// do something 3
     
-});
+	});
 
-// do something 4
+	// do something 4
 '''
 
 同步任务 do something 2 一定会在 do something 1完成之后执行。
@@ -102,15 +102,15 @@ dispatch_sync提交的任务是在当前线程中执行的。实际上dispatch_s
 
 ‘’‘objc
 
-NSLog(@"1"); // 任务1
+	NSLog(@"1"); // 任务1
 
-dispatch_sync(dispatch_get_main_queue(), ^{
+	dispatch_sync(dispatch_get_main_queue(), ^{
 
-    NSLog(@"2"); // 任务2
+    	NSLog(@"2"); // 任务2
     
-});
+	});
 
-NSLog(@"3"); // 任务3
+	NSLog(@"3"); // 任务3
 
 '''
 
@@ -120,15 +120,15 @@ NSLog(@"3"); // 任务3
 
 ‘’‘objc
 
-NSLog(@"1"); // 任务1
+	NSLog(@"1"); // 任务1
 
-dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+	dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
     NSLog(@"2"); // 任务2
     
-});
+	});
 
-NSLog(@"3"); // 任务3
+	NSLog(@"3"); // 任务3
 
 ‘’‘
 
@@ -139,22 +139,22 @@ NSLog(@"3"); // 任务3
 
 ‘’‘objc
 
-dispatch_queue_t queue = dispatch_queue_create("com.demo.serialQueue", DISPATCH_QUEUE_SERIAL);
+	dispatch_queue_t queue = dispatch_queue_create("com.demo.serialQueue", DISPATCH_QUEUE_SERIAL);
 
-NSLog(@"1"); // 任务1
+	NSLog(@"1"); // 任务1
 
-dispatch_async(queue, ^{
+	dispatch_async(queue, ^{
 
-    NSLog(@"2"); // 任务2
+    	NSLog(@"2"); // 任务2
     
-    dispatch_sync(queue, ^{  
-        NSLog(@"3"); // 任务3
-    });
+    	dispatch_sync(queue, ^{  
+        	NSLog(@"3"); // 任务3
+    	});
     
-    NSLog(@"4"); // 任务4
-});
+    	NSLog(@"4"); // 任务4
+	});
 
-NSLog(@"5"); // 任务5
+	NSLog(@"5"); // 任务5
 
 '''
 
@@ -164,18 +164,18 @@ NSLog(@"5"); // 任务5
 
 '''objc
 
-NSLog(@"1"); // 任务1
+	NSLog(@"1"); // 任务1
 
-dispatch_async(dispatch_get_main_queue(), ^{
+	dispatch_async(dispatch_get_main_queue(), ^{
 
-    NSLog(@"2"); // 任务2
-    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        NSLog(@"3"); // 任务3
-    });
-    NSLog(@"4"); // 任务4
-});
+    	NSLog(@"2"); // 任务2
+    	dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        	NSLog(@"3"); // 任务3
+    	});
+    	NSLog(@"4"); // 任务4
+	});
 
-NSLog(@"5"); // 任务5
+	NSLog(@"5"); // 任务5
 
 '''
 
@@ -186,21 +186,21 @@ NSLog(@"5"); // 任务5
 
 '''objc 
 
-dispatch_async(dispatch_get_global_queue(0, 0), ^{
+	dispatch_async(dispatch_get_global_queue(0, 0), ^{
 
-    NSLog(@"1"); // 任务1
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        NSLog(@"2"); // 任务2
-    });
-    NSLog(@"3"); // 任务3
-});
+    	NSLog(@"1"); // 任务1
+    	dispatch_sync(dispatch_get_main_queue(), ^{
+        	NSLog(@"2"); // 任务2
+    	});
+    	NSLog(@"3"); // 任务3
+	});
 
-NSLog(@"4"); // 任务4
+	NSLog(@"4"); // 任务4
 
-while (1) {
-}
+	while (1) {
+	}
 
-NSLog(@"5"); // 任务5
+	NSLog(@"5"); // 任务5
 
 '''
 
