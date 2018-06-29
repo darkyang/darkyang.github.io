@@ -1,3 +1,17 @@
+---
+layout: post
+title: GCD and NSOpertion
+subtitle: 第一篇提交的博客
+date: 2018-02-06
+author: simon
+header-img: img/post-bg-coffee.jpeg
+catalog: true
+tags:
+   - iOS
+   - Blog
+   - GCD
+---
+
 ## Dispatch Queues
 GCD处理异步任务和并发任务的关键载体，dispatch queue 是类类结构，对任务的管理遵循FIFO。
 
