@@ -116,7 +116,7 @@ Transaction
 
 创建交易过程中需要做的事情
 
-![](https://github.com/WeeklyCombine/WeeklyResource/blob/master/doc/resources/CreateTransaction_1.jpeg "创建交易")
+![](https://raw.githubusercontent.com/WeeklyCombine/WeeklyResource/master/doc/resources/CreateTransaction_1.jpeg "创建交易")
 
 instruction：
  * 计算全部支出的金额
@@ -131,7 +131,7 @@ instruction：
  * 生成spender的sigScript配合公钥进行签名验证
  * 检查生成的交易的大小 
 
- ![](https://github.com/WeeklyCombine/WeeklyResource/blob/master/doc/resources/createTransaction.jpeg "创建交易流程")
+ ![](https://raw.githubusercontent.com/WeeklyCombine/WeeklyResource/master/doc/resources/createTransaction.jpeg "创建交易流程")
 
     //创建交易
     bool CWallet::CreateTransaction(const std::vector<CRecipient> &vecSend,//接收转账的对象队列
